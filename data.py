@@ -23,6 +23,9 @@ import ccxt
 import asyncio
 import ccxt.async_support as ccxt_async
 
+import nest_asyncio
+nest_asyncio.apply()
+
 # --------------------------------------------------------------------------- EXCHANGE TRANSACTIONS FEEs -- # 
 # --------------------------------------------------------------------------------------------------------- #
 
@@ -155,7 +158,7 @@ def order_book(symbol, exchanges, execution='async', stop=None, output=None, ver
     """
     
     # Store data for every exchange in the list
-    r_data = {'bitfinex': {}, 'kraken': {}}
+    r_data = {'bitfinex': {}, 'kraken': {}, 'ftx':{}, 'currencycom': {}, 'coinmate':{}}
 
     # ----------------------------------------------------------------------------- ASYNCRONOUS REQUESTS -- # 
     async def async_client(exchange, symbol):

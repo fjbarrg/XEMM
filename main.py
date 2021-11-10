@@ -12,22 +12,43 @@
 
 # -- Load Packages for this script
 import pandas as pd
-import pandas as np
+import numpy as np
+
+import nest_asyncio
+nest_asyncio.apply()
 
 # -- Load other scripts
 from data import fees_schedule, order_book
 
-# Small test
-exchanges = ["bitfinex", "kraken"]
-symbol = 'BTC/EUR'
-expected_volume = 0
-
-# Get fee schedule
-# fees = fees_schedule(exchange='kraken', symbol=symbol, expected_volume=expected_volume)
-
 # Massive download of OrderBook data
-# data = order_book(symbol=symbol, exchanges=exchanges, output='inplace', stop=None, verbose=True)
 
+def dict_data(symbol):
+    exchanges =["ftx","currencycom","bitfinex","kraken","coinmate"] 
+    
+    data = order_book(symbol=symbol, exchanges=exchanges, output='inplace', stop=None, verbose=True)
+    #data = order_book(symbol='BTC/USD', exchanges=exchanges, output='inplace', stop=None, verbose=True)
+    
+    dict ={}
+
+    for exchange in exchanges:
+        for i in range(len(list(data[exchange].keys()))):
+            tmp = data[exchange][list(data[exchange].keys())[i]]
+            fechas=list(data[exchange].keys())
+            llave = "ocurrencia_" + str(i+1)
+            dict[llave] = {'timeStamp':fechas[i],
+                    'exchange': exchange, 
+                    'level' : len(tmp),
+                    'ask_vol' :  tmp.ask_size.sum(),
+                    'bid_vol' : tmp.bid_size.sum(),
+                    'total_vol' : tmp.ask_size.sum() + tmp.bid_size.sum(),
+                    'mid_price' :  (tmp.ask_size.sum() + tmp.bid_size.sum()).mean(),
+                    'vwap' : ((tmp.bid_size.sum()*tmp.bid)/tmp.bid_size.sum() + (tmp.ask_size.sum()*tmp.ask)/tmp.bid_size.sum()).mean()
+                            } 
+     
+    return pd.DataFrame(dict).T    
+
+    df.exchange.unique()       
+        
 # Test
 # data['kraken'][list(data['kraken'].keys())[2]]
 
